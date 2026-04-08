@@ -1,0 +1,58 @@
+robot:
+  name: turtlebot3_waffle
+  description: "TurtleBot3 Waffle in Gazebo simulation"
+
+connection:
+  mode: local   # Set to 'remote' to use gRPCTransport
+  remote:
+    host: "192.168.1.100"
+    grpc_port: 50051
+    ws_port: 8765
+
+hardware:
+  arms: []
+  grippers: []
+
+  base:
+    type: differential
+    cmd_vel_topic: /cmd_vel
+    odom_topic: /odom
+    max_linear_vel: 0.26
+    max_angular_vel: 1.82
+
+  sensors:
+    cameras:
+      - name: main_camera
+        topic: /camera/image_raw
+        info_topic: /camera/camera_info
+        encoding: rgb8
+        resolution: [1920, 1080]
+
+    lidar:
+      - name: base_scan
+        topic: /scan
+        type: 2d
+
+    imu:
+      - name: base_imu
+        topic: /imu
+
+dashboard:
+  enabled: true
+  port: 3000
+  ws_port: 3000
+  static_dir: "tongrobot_dashboard/frontend/dist"
+  default_panels:
+    - type: camera
+      name: main_camera
+    - type: base_state
+    - type: laser_scan
+      name: base_scan
+    - type: command
+
+safety:
+  velocity_limit_check: true
+  watchdog_timeout_ms: 500
+
+logging:
+  level: INFO

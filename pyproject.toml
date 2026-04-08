@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tongrobot"
+version = "0.1.0"
+description = "Hardware-agnostic robotic middleware — clean Python SDK over ROS2"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy",
+    "pyyaml",
+    "grpcio",
+    "grpcio-tools",
+    "protobuf",
+    "websockets",
+    "opencv-python",
+    "aiohttp",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "pytest-asyncio"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["tongrobot*"]

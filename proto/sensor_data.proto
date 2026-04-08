@@ -1,0 +1,30 @@
+syntax = "proto3";
+package tongrobot;
+
+message CameraFrameMsg {
+  bytes  data          = 1;  // JPEG-compressed bytes when is_compressed=true
+  int32  width         = 2;
+  int32  height        = 3;
+  int32  channels      = 4;
+  double timestamp     = 5;
+  string encoding      = 6;
+  bool   is_compressed = 7;
+}
+
+message LaserScanMsg {
+  repeated float ranges          = 1;
+  float          angle_min       = 2;
+  float          angle_max       = 3;
+  float          angle_increment = 4;
+  double         timestamp       = 5;
+}
+
+message IMUMsg {
+  // 4 elements: quaternion xyzw
+  repeated double orientation         = 1;
+  // 3 elements: rad/s
+  repeated double angular_velocity    = 2;
+  // 3 elements: m/s²
+  repeated double linear_acceleration = 3;
+  double          timestamp           = 4;
+}

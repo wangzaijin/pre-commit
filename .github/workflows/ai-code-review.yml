@@ -1,0 +1,44 @@
+name: AI Automated Code Review
+# Trigger rules: Automatically triggered when PR is created, updated, reopened, and pushed to main branch
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+  push:
+    branches: [main]
+
+# Minimum permission configuration to avoid excessive authorization
+permissions:
+  contents: read
+  pull-requests: write  # Used for PR comments
+  issues: write         # Used for Issue comments
+
+jobs:
+  ai-code-review:
+    runs-on: ubuntu-latest
+    steps:
+      # Fetch repository code (updated to latest version)
+      - uses: actions/checkout@v4
+
+      # Set up Python environment (updated to latest version)
+      - name: Setup Python
+        uses: actions/setup-python@v5  # Updated to v5
+        with:
+          python-version: '3.10'
+
+      # Core: OpenAI Code Review
+      - name: OpenAI Code Review
+        uses: anc95/ChatGPT-CodeReview@main
+        env:
+          # GitHub's built-in token, automatically generated, no extra configuration needed
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Our configured OpenAI key
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_BASE_URL: ${{ vars.OPENAI_BASE_URL }}
+          # Language for review report output
+          LANGUAGE: English
+          # Model selection (gpt-4o-mini for daily use, gpt-4o for high precision)
+          MODEL: gpt-4o-mini
+          # Optional: Filter files to exclude from review, comma-separated, supports wildcards
+          # EXCLUDE: "**/*.md, **/package-lock.json, **/yarn.lock, **/*.svg"
+          # Optional: Custom review rules, customize specific review dimensions
+          # PROMPT: "You are a senior code review expert, reviewing the following code changes from 5 perspectives: code standards, security vulnerabilities, performance issues, logical defects, and maintainability. Only output problematic areas and specific fix recommendations. If no issues, state that the code is compliant, output in English."

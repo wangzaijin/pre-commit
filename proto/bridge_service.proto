@@ -1,0 +1,51 @@
+syntax = "proto3";
+package tongrobot;
+
+import "robot_state.proto";
+import "sensor_data.proto";
+import "commands.proto";
+
+message Empty {}
+
+message StreamRequest {
+  string name = 1;
+  int32  fps  = 2;
+}
+
+message TransformRequest {
+  string target_frame = 1;
+  string source_frame = 2;
+}
+
+message TransformMsg {
+  // 3 elements: x, y, z (m)
+  repeated double position   = 1;
+  // 4 elements: quaternion xyzw
+  repeated double quaternion = 2;
+  double          timestamp  = 3;
+}
+
+message CommandAck {
+  bool   success = 1;
+  string message = 2;
+}
+
+service TongRobotBridge {
+  // State
+  rpc GetRobotState      (Empty)         returns (RobotStateMsg);
+  rpc StreamRobotState   (Empty)         returns (stream RobotStateMsg);
+
+  // Sensors
+  rpc GetCameraFrame     (StreamRequest) returns (CameraFrameMsg);
+  rpc StreamCameraFrames (StreamRequest) returns (stream CameraFrameMsg);
+  rpc GetLaserScan       (StreamRequest) returns (LaserScanMsg);
+  rpc GetIMU             (StreamRequest) returns (IMUMsg);
+
+  // Commands
+  rpc SetVelocityCommand (VelocityCommandMsg) returns (CommandAck);
+  rpc SetJointCommand    (JointCommandMsg)    returns (CommandAck);
+  rpc EmergencyStop      (Empty)              returns (CommandAck);
+
+  // TF
+  rpc GetTransform       (TransformRequest)   returns (TransformMsg);
+}

@@ -1,0 +1,16 @@
+syntax = "proto3";
+package tongrobot;
+
+message VelocityCommandMsg {
+  double linear_x  = 1;
+  double linear_y  = 2;
+  double angular_z = 3;
+}
+
+message JointCommandMsg {
+  string          arm_name       = 1;
+  repeated double positions      = 2;
+  repeated double velocities     = 3;
+  bool            has_positions  = 4;
+  bool            has_velocities = 5;
+}

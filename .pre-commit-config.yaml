@@ -1,0 +1,67 @@
+# Default hook types to install
+default_install_hook_types: [pre-commit, commit-msg]  # Install pre-commit and commit-msg hooks
+default_stages: [pre-commit]                         # Run by default during pre-commit stage
+
+repos:
+  # 1. Official general-purpose hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0                                      # Use version compatible with Python 3.8
+    hooks:
+      - id: trailing-whitespace                         # Remove trailing whitespace
+      - id: end-of-file-fixer                           # Ensure files end with newline
+      - id: check-yaml                                  # Check YAML syntax
+        args: [--unsafe]                                # Support anchors and reference syntax
+        exclude: |
+          (?x)^(
+              UniversalRobots/.*\.yaml|
+              .*joint_limits\.yaml
+          )$
+      - id: check-json                                  # Check JSON syntax
+      - id: check-toml                                  # Check TOML syntax
+      - id: check-added-large-files                     # Prevent committing large files
+        args: [--maxkb=500]                             # Set maximum file size to 500KB
+      - id: detect-private-key                          # Scan and prevent private key leakage
+      - id: mixed-line-ending                           # Ensure consistent line endings
+        args: [--fix=lf]                                # Automatically fix to LF line endings
+
+  # 2. Python code quality tools - Using pre-commit repository versions
+  - repo: https://github.com/psf/black
+    rev: 24.10.0                                       # Use specific version of black
+    hooks:
+      - id: black
+        language_version: python3                      # Specify Python version
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.9.10                                       # Use specific version of ruff
+    hooks:
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]           # Automatically fix issues
+
+  # # 3. Commit message linter (using Conventional Commits specification)
+  # - repo: https://github.com/alessandrojcm/commitlint-pre-commit-hook
+  #   rev: v9.23.0
+  #   hooks:
+  #     - id: commitlint
+  #       stages: [commit-msg]                            # Run only during commit-msg stage
+  #       additional_dependencies: ['@commitlint/config-conventional']  # Config file can be placed in project root as .commitlintrc
+
+  # 4. AI code quality checker
+  - repo: local
+    hooks:
+      - id: ai-code-checker
+        name: Check code with AI
+        entry: python code_check/ai_checker.py --show-warnings-only
+        language: python
+        types_or: [python, javascript, c++, c, yaml, json, markdown]
+        pass_filenames: false
+        description: "Use AI to simulate check code quality and potential issues"
+
+  # 5. AI code reviewer (temporarily disabled due to environment issues)
+  # - repo: local
+  #   hooks:
+  #     - id: ai-reviewer
+  #       name: Review code with AI
+  #       entry: python code_check/review_with_ai.py
+  #       language: python
+  #       types_or: [python, javascript, c++, c, yaml, json, markdown]
+  #       pass_filenames: false
+  #       description: "Use AI to perform detailed code review"
